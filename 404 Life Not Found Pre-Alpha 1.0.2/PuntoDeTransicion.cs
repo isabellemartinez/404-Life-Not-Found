@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PuntoDeTransicion : MonoBehaviour
 {
+    [Header("Destino")]
     [SerializeField] private Transform destino;
 
     private bool _transicionando;
@@ -39,4 +40,5 @@ public class PuntoDeTransicion : MonoBehaviour
 
         _transicionando = false;
     }
+}
 }
