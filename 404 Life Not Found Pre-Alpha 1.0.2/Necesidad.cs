@@ -3,24 +3,28 @@ using UnityEngine.UI;
 
 public class Necesidad : MonoBehaviour
 {
-    [SerializeField] protected Image icono;
-    [SerializeField] protected Sprite nivel8;
-    [SerializeField] protected Sprite nivel7;
-    [SerializeField] protected Sprite nivel6;
-    [SerializeField] protected Sprite nivel5;
-    [SerializeField] protected Sprite nivel4;
-    [SerializeField] protected Sprite nivel3;
-    [SerializeField] protected Sprite nivel2;
-    [SerializeField] protected Sprite nivel1;
+    [Header("Icono de necesidad")]
+    [SerializeField] protected Image _icono;
+
+    [Header("Sprites por nivel")]
+    [SerializeField] protected Sprite _nivel8;
+    [SerializeField] protected Sprite _nivel7;
+    [SerializeField] protected Sprite _nivel6;
+    [SerializeField] protected Sprite _nivel5;
+    [SerializeField] protected Sprite _nivel4;
+    [SerializeField] protected Sprite _nivel3;
+    [SerializeField] protected Sprite _nivel2;
+    [SerializeField] protected Sprite _nivel1;
 
     protected float _valor = 100f;
     protected float _velocidadBase = 0.3f;
+
+    public float Valor { get { return _valor; } }
 
     protected virtual void Start()
     {
         _valor = LeerValorDeGestor();
         _valor = Mathf.Clamp(_valor, 0f, 100f);
-
         GuardarValorEnGestor(_valor);
         ActualizarIcono();
     }
@@ -31,7 +35,6 @@ public class Necesidad : MonoBehaviour
         _valor = Mathf.Clamp(_valor, 0f, 100f);
 
         float velocidad = ObtenerVelocidad();
-
         _valor -= velocidad * Time.deltaTime;
         _valor = Mathf.Clamp(_valor, 0f, 100f);
 
@@ -55,52 +58,50 @@ public class Necesidad : MonoBehaviour
 
     protected void ActualizarIcono()
     {
-        if (icono == null)
+        if (_icono == null)
         {
             return;
         }
 
         if (_valor > 87.5f)
         {
-            icono.sprite = nivel8;
+            _icono.sprite = _nivel8;
         }
         else if (_valor > 75f)
         {
-            icono.sprite = nivel7;
+            _icono.sprite = _nivel7;
         }
         else if (_valor > 62.5f)
         {
-            icono.sprite = nivel6;
+            _icono.sprite = _nivel6;
         }
         else if (_valor > 50f)
         {
-            icono.sprite = nivel5;
+            _icono.sprite = _nivel5;
         }
         else if (_valor > 37.5f)
         {
-            icono.sprite = nivel4;
+            _icono.sprite = _nivel4;
         }
         else if (_valor > 25f)
         {
-            icono.sprite = nivel3;
+            _icono.sprite = _nivel3;
         }
         else if (_valor > 12.5f)
         {
-            icono.sprite = nivel2;
+            _icono.sprite = _nivel2;
         }
         else
         {
-            icono.sprite = nivel1;
+            _icono.sprite = _nivel1;
         }
     }
 
     public void ReducirValor(float cantidad)
     {
         _valor = LeerValorDeGestor();
-
         _valor -= cantidad;
         _valor = Mathf.Clamp(_valor, 0f, 100f);
-
         GuardarValorEnGestor(_valor);
         ActualizarIcono();
     }
@@ -108,10 +109,8 @@ public class Necesidad : MonoBehaviour
     public void AumentarValor(float cantidad)
     {
         _valor = LeerValorDeGestor();
-
         _valor += cantidad;
         _valor = Mathf.Clamp(_valor, 0f, 100f);
-
         GuardarValorEnGestor(_valor);
         ActualizarIcono();
     }
