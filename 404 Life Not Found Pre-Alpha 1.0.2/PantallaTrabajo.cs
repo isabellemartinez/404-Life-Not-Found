@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class PantallaTrabajo : MonoBehaviour
 {
+    [Header("Referencias")]
     [SerializeField] private GameObject _prefabListItem;
     [SerializeField] private Transform Content;
 
@@ -44,7 +45,6 @@ public class PantallaTrabajo : MonoBehaviour
                                && GestorTrabajos.Instancia.PuedeAceptarTrabajo();
 
             scriptItem.Configurar(trabajo, desbloqueado);
-
             _itemsInstanciados.Add(item);
         }
     }
