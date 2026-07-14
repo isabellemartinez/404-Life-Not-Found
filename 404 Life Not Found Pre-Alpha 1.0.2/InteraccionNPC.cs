@@ -6,49 +6,53 @@ using System.Collections;
 public class InteraccionNPC : MonoBehaviour
 {
     [Header("Icono de interacción")]
-    [SerializeField] private GameObject iconoInteraccion;
+    [SerializeField] private GameObject _iconoInteraccion;
 
     [Header("UI de diálogo")]
-    [SerializeField] private GameObject panelMensaje;
-    [SerializeField] private TMP_Text textoMensaje;
+    [SerializeField] private GameObject _panelMensaje;
+    [SerializeField] private TMP_Text _textoMensaje;
 
     [Header("Diálogos del NPC")]
     [TextArea(2, 8)]
-    [SerializeField] private string[] dialogos;
+    [SerializeField] private string[] _dialogos;
 
     [Header("Efecto de texto")]
-    [SerializeField] private float velocidadTexto = 0.04f;
+    [SerializeField] private float _velocidadTexto = 0.04f;
 
-    private bool jugadorCerca = false;
-    private bool dialogoActivo = false;
-    private bool escribiendo = false;
+    private bool _jugadorCerca = false;
+    private bool _dialogoActivo = false;
+    private bool _escribiendo = false;
 
-    private int indiceDialogo = 0;
-    private string textoActual = "";
+    private int _indiceDialogo = 0;
+    private string _textoActual = "";
 
-    private Coroutine corrutinaTexto;
+    private Coroutine _corrutinaTexto;
+
+    public bool DialogoActivo { get { return _dialogoActivo; } }
+    public bool Escribiendo { get { return _escribiendo; } }
+    public int IndiceDialogo { get { return _indiceDialogo; } }
 
     private void Start()
     {
-        if (iconoInteraccion != null)
+        if (_iconoInteraccion != null)
         {
-            iconoInteraccion.SetActive(false);
+            _iconoInteraccion.SetActive(false);
         }
 
-        if (panelMensaje != null)
+        if (_panelMensaje != null)
         {
-            panelMensaje.SetActive(false);
+            _panelMensaje.SetActive(false);
         }
 
-        if (textoMensaje != null)
+        if (_textoMensaje != null)
         {
-            textoMensaje.text = "";
+            _textoMensaje.text = "";
         }
     }
 
     private void Update()
     {
-        if (jugadorCerca == false)
+        if (!_jugadorCerca)
         {
             return;
         }
@@ -66,13 +70,13 @@ public class InteraccionNPC : MonoBehaviour
 
     private void ManejarInteraccion()
     {
-        if (dialogoActivo == false)
+        if (!_dialogoActivo)
         {
             IniciarDialogo();
             return;
         }
 
-        if (escribiendo)
+        if (_escribiendo)
         {
             CompletarTextoActual();
             return;
@@ -83,91 +87,78 @@ public class InteraccionNPC : MonoBehaviour
 
     private void IniciarDialogo()
     {
-        if (dialogos == null || dialogos.Length == 0)
+        if (_dialogos == null || _dialogos.Length == 0)
         {
             Debug.LogWarning("No hay diálogos asignados en el NPC.", this);
             return;
         }
 
-        if (panelMensaje == null)
+        _dialogoActivo = true;
+        _indiceDialogo = 0;
+
+        if (_iconoInteraccion != null)
         {
-            Debug.LogWarning("No asignaste el panelMensaje en el Inspector.", this);
-            return;
+            _iconoInteraccion.SetActive(false);
         }
 
-        if (textoMensaje == null)
+        if (_panelMensaje != null)
         {
-            Debug.LogWarning("No asignaste el textoMensaje en el Inspector.", this);
-            return;
+            _panelMensaje.SetActive(true);
         }
-
-        dialogoActivo = true;
-        indiceDialogo = 0;
-
-        if (iconoInteraccion != null)
-        {
-            iconoInteraccion.SetActive(false);
-        }
-
-        panelMensaje.SetActive(true);
 
         MostrarDialogoActual();
     }
 
     private void MostrarDialogoActual()
     {
-        if (textoMensaje == null)
+        if (_textoMensaje == null)
         {
             Debug.LogWarning("No asignaste el textoMensaje en el Inspector.", this);
             return;
         }
 
-        textoActual = dialogos[indiceDialogo];
+        _textoActual = _dialogos[_indiceDialogo];
 
-        if (corrutinaTexto != null)
+        if (_corrutinaTexto != null)
         {
-            StopCoroutine(corrutinaTexto);
+            StopCoroutine(_corrutinaTexto);
         }
 
-        corrutinaTexto = StartCoroutine(EscribirTexto(textoActual));
+        _corrutinaTexto = StartCoroutine(EscribirTexto(_textoActual));
     }
 
     private IEnumerator EscribirTexto(string texto)
     {
-        escribiendo = true;
-        textoMensaje.text = "";
+        _escribiendo = true;
+        _textoMensaje.text = "";
 
         foreach (char letra in texto)
         {
-            textoMensaje.text += letra;
-            yield return new WaitForSeconds(velocidadTexto);
+            _textoMensaje.text += letra;
+            yield return new WaitForSeconds(_velocidadTexto);
         }
 
-        escribiendo = false;
-        corrutinaTexto = null;
+        _escribiendo = false;
+        _corrutinaTexto = null;
     }
 
     private void CompletarTextoActual()
     {
-        if (corrutinaTexto != null)
+        if (_corrutinaTexto != null)
         {
-            StopCoroutine(corrutinaTexto);
-            corrutinaTexto = null;
+            StopCoroutine(_corrutinaTexto);
+            _corrutinaTexto = null;
         }
 
-        if (textoMensaje != null)
-        {
-            textoMensaje.text = textoActual;
-        }
-
-        escribiendo = false;
+        _textoMensaje.text = _textoActual;
+        _escribiendo = false;
     }
 
     private void SiguienteDialogo()
     {
-        indiceDialogo++;
+        _indiceDialogo++;
 
-        if (indiceDialogo >= dialogos.Length)
+        if (_indiceDialogo >= _dialogos.Length)
         {
             TerminarDialogo();
             return;
@@ -178,84 +169,73 @@ public class InteraccionNPC : MonoBehaviour
 
     private void TerminarDialogo()
     {
-        dialogoActivo = false;
-        escribiendo = false;
-        indiceDialogo = 0;
+        _dialogoActivo = false;
+        _indiceDialogo = 0;
 
-        if (corrutinaTexto != null)
+        if (_panelMensaje != null)
         {
-            StopCoroutine(corrutinaTexto);
-            corrutinaTexto = null;
+            _panelMensaje.SetActive(false);
         }
 
-        if (panelMensaje != null)
+        if (_textoMensaje != null)
         {
-            panelMensaje.SetActive(false);
+            _textoMensaje.text = "";
         }
 
-        if (textoMensaje != null)
+        if (_jugadorCerca && _iconoInteraccion != null)
         {
-            textoMensaje.text = "";
-        }
-
-        if (jugadorCerca && iconoInteraccion != null)
-        {
-            iconoInteraccion.SetActive(true);
-        }
-    }
-
-    private void CerrarTodo()
-    {
-        dialogoActivo = false;
-        escribiendo = false;
-        indiceDialogo = 0;
-
-        if (corrutinaTexto != null)
-        {
-            StopCoroutine(corrutinaTexto);
-            corrutinaTexto = null;
-        }
-
-        if (panelMensaje != null)
-        {
-            panelMensaje.SetActive(false);
-        }
-
-        if (textoMensaje != null)
-        {
-            textoMensaje.text = "";
+            _iconoInteraccion.SetActive(true);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") == false)
+        if (other.CompareTag("Player"))
         {
-            return;
-        }
+            _jugadorCerca = true;
 
-        jugadorCerca = true;
-
-        if (dialogoActivo == false && iconoInteraccion != null)
-        {
-            iconoInteraccion.SetActive(true);
+            if (!_dialogoActivo && _iconoInteraccion != null)
+            {
+                _iconoInteraccion.SetActive(true);
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player") == false)
+        if (other.CompareTag("Player"))
         {
-            return;
+            _jugadorCerca = false;
+
+            if (_iconoInteraccion != null)
+            {
+                _iconoInteraccion.SetActive(false);
+            }
+
+            CerrarTodo();
+        }
+    }
+
+    private void CerrarTodo()
+    {
+        _dialogoActivo = false;
+        _escribiendo = false;
+        _indiceDialogo = 0;
+
+        if (_corrutinaTexto != null)
+        {
+            StopCoroutine(_corrutinaTexto);
+            _corrutinaTexto = null;
         }
 
-        jugadorCerca = false;
-
-        if (iconoInteraccion != null)
+        if (_panelMensaje != null)
         {
-            iconoInteraccion.SetActive(false);
+            _panelMensaje.SetActive(false);
         }
 
-        CerrarTodo();
+        if (_textoMensaje != null)
+        {
+            _textoMensaje.text = "";
+        }
     }
 }
